@@ -6,12 +6,11 @@ import os
 import sys
 import threading
 import sys
+from enum import Enum
 
 import serial
 from serial.tools.list_ports import comports
 from serial.tools import hexlify_codec
-
-
 
 
 def ask_for_port():
@@ -48,9 +47,27 @@ def printData():
     Ser.close()
 
 
+fmt=0
+def parseArgs():
+    global fmt
+    args=sys.argv
+    if len(args)>1:
+        if args[1]=='bin':
+            fmt=1
+        elif args[1]=='oct':
+            fmt=2
+        elif args[1]=='dec':
+            fmt=3
+        elif args[1]=='hex':
+            fmt=4
+        else :
+            fmt=0
+
 
 
 if __name__ == "__main__":
+    parseArgs()
     serialPort = ask_for_port()
     serialBaud = ask_baud()
+    print(fmt)
     printData()
