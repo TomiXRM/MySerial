@@ -38,15 +38,57 @@ def ask_baud():
     baud = raw_input('--- Enter baudrate: ')
     return baud
 
-
-def printData():
-    Ser = serial.Serial(serialPort, serialBaud, timeout = None)
+def printAscii(Ser):
     while(True):
         string_data = Ser.read()
         sys.stdout.write(str(string_data))
-        # print(str(string_data),end="")
-    Ser.close()
 
+def printBin(Ser):
+    while(True):
+        data = ord(Ser.read())
+        sys.stdout.write(bin(data))
+        sys.stdout.write("\n")
+
+def printOct(Ser):
+    while(True):
+        for i in range(8):
+            data = ord(Ser.read())
+            sys.stdout.write(oct(data))
+            sys.stdout.write(" ")
+        sys.stdout.write("\n")
+
+
+def printDec(Ser):
+    while(True):
+        data = ord(Ser.read())
+        sys.stdout.write(str(data))
+        sys.stdout.write("\n")
+
+
+def printHex(Ser):
+    while(True):
+        for i in range(8):
+            string_data = ord(Ser.read())
+            sys.stdout.write(hex(string_data))
+            sys.stdout.write(" ")
+        sys.stdout.write("\n")
+
+
+
+def printData():
+    Ser = serial.Serial(serialPort, serialBaud, timeout = None)
+    
+    if fmt==1: # bin
+        printBin(Ser)
+    elif fmt==2: # oct
+        printOct(Ser)
+    elif fmt==3: # dec
+        printDec(Ser)
+    elif fmt==4: # hex
+        printHex(Ser)
+    else: # ascii
+        printAscii(Ser)
+    Ser.close()
 
 
 def parseArgs():
@@ -69,5 +111,4 @@ if __name__ == "__main__":
     parseArgs()
     serialPort = ask_for_port()
     serialBaud = ask_baud()
-    print(fmt)
     printData()
