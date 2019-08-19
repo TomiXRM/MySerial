@@ -11,6 +11,7 @@ from enum import Enum
 import serial
 from serial.tools.list_ports import comports
 from serial.tools import hexlify_codec
+fmt=0
 
 
 def ask_for_port():
@@ -47,7 +48,7 @@ def printData():
     Ser.close()
 
 
-fmt=0
+
 def parseArgs():
     global fmt
     args=sys.argv
@@ -62,7 +63,6 @@ def parseArgs():
             fmt=4
         else :
             fmt=0
-
 
 
 if __name__ == "__main__":
