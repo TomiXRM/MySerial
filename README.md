@@ -3,9 +3,7 @@ Serial Debugger based on by pyserial.
 
 ## What is this python script?
 This program is a part of my study of python.
-It is developed through editing ` pyserial` example.
-
-
+It is developed through editing ` pyserial` [example](https://github.com/pyserial/pyserial/blob/master/serial/tools/miniterm.py).
 Using with python lancher is recommended.
 
 ## Usage
@@ -28,5 +26,11 @@ e,g `9600` `19200` `38400` `57600` `74880` `115200` `230400` ...
 
 **Enjoy Monitoring :)**
 
+### Requiremants
+- Python3
+- pyserial
+
+
 ## LICENCE 
  MIT. See [LICENCE](./LICENCE)
+ 
