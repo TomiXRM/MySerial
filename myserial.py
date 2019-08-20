@@ -6,12 +6,12 @@ import os
 import sys
 import threading
 import sys
+from enum import Enum
 
 import serial
 from serial.tools.list_ports import comports
 from serial.tools import hexlify_codec
-
-
+fmt=0
 
 
 def ask_for_port():
@@ -38,19 +38,77 @@ def ask_baud():
     baud = raw_input('--- Enter baudrate: ')
     return baud
 
-
-def printData():
-    Ser = serial.Serial(serialPort, serialBaud, timeout = None)
+def printAscii(Ser):
     while(True):
         string_data = Ser.read()
         sys.stdout.write(str(string_data))
-        # print(str(string_data),end="")
+
+def printBin(Ser):
+    while(True):
+        data = ord(Ser.read())
+        sys.stdout.write(bin(data))
+        sys.stdout.write("\n")
+
+def printOct(Ser):
+    while(True):
+        for i in range(8):
+            data = ord(Ser.read())
+            sys.stdout.write(oct(data))
+            sys.stdout.write(" ")
+        sys.stdout.write("\n")
+
+
+def printDec(Ser):
+    while(True):
+        data = ord(Ser.read())
+        sys.stdout.write(str(data))
+        sys.stdout.write("\n")
+
+
+def printHex(Ser):
+    while(True):
+        for i in range(8):
+            string_data = ord(Ser.read())
+            sys.stdout.write(hex(string_data))
+            sys.stdout.write(" ")
+        sys.stdout.write("\n")
+
+
+
+def printData():
+    Ser = serial.Serial(serialPort, serialBaud, timeout = None)
+    
+    if fmt==1: # bin
+        printBin(Ser)
+    elif fmt==2: # oct
+        printOct(Ser)
+    elif fmt==3: # dec
+        printDec(Ser)
+    elif fmt==4: # hex
+        printHex(Ser)
+    else: # ascii
+        printAscii(Ser)
     Ser.close()
 
 
+def parseArgs():
+    global fmt
+    args=sys.argv
+    if len(args)>1:
+        if args[1]=='bin':
+            fmt=1
+        elif args[1]=='oct':
+            fmt=2
+        elif args[1]=='dec':
+            fmt=3
+        elif args[1]=='hex':
+            fmt=4
+        else :
+            fmt=0
 
 
 if __name__ == "__main__":
+    parseArgs()
     serialPort = ask_for_port()
     serialBaud = ask_baud()
     printData()

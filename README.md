@@ -1,20 +1,36 @@
 # MySerial
-Serial Debugger (Python pyserial Based)
+Serial Debugger based on by pyserial.
 
-## What is this python script
-I wrote this program for studing python so, it might have mistake andbroken sentence.
-I checked it works.
-edit with pyserial example(https://github.com/pyserial/pyserial/blob/master/serial/tools/miniterm.py)
+## What is this python script?
+This program is a part of my study of python.
+It is developed through editing ` pyserial` [example](https://github.com/pyserial/pyserial/blob/master/serial/tools/miniterm.py).
+Using with python lancher is recommended.
 
-useing with python lancher is good for use.
+## Usage
+Usage is quite simple. Probably you wouldn't need this instruction but just in case.
 
-## How I can use it
-### firstable,ask which port do you use
-enter the number of Serial Port 
+### Step0. Call this script
 
-### Next,enter baudrate value
+~~~bash
+$ python Myserial.py
+~~~
 
-If you want to use it,You should intall pyserial and threding module,
-and it works on python3.-- I didint test on version2.--
+### Step1. Specify serial port which you'd like to connect.
 
-I
+The prompt shows several options. Find your device and specify one of them by entering index number or its name. 
+
+### Step2. Set Baudrate
+After Step1,the prompt asks the baudrate which you'd like to use.
+Enter the baudrate numbers. 
+e,g `9600` `19200` `38400` `57600` `74880` `115200` `230400` ...
+
+**Enjoy Monitoring :)**
+
+### Requiremants
+- Python3
+- pyserial
+
+
+## LICENCE 
+ MIT. See [LICENCE](./LICENCE)
+ 
