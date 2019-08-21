@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 
 import codecs
@@ -38,6 +37,11 @@ def ask_baud():
     baud = raw_input('--- Enter baudrate: ')
     return baud
 
+
+def ask_format():
+    sys.stdout.write("\r\n\r\n--- bin:1  oct:2  dec:3  hex:4  ASCI:ENTER\r\n")
+    format = raw_input("--- Enter format: ")
+    return format
 def printAscii(Ser):
     while(True):
         string_data = Ser.read()
@@ -77,7 +81,7 @@ def printHex(Ser):
 
 def printData():
     Ser = serial.Serial(serialPort, serialBaud, timeout = None)
-    
+
     if fmt==1: # bin
         printBin(Ser)
     elif fmt==2: # oct
@@ -111,4 +115,5 @@ if __name__ == "__main__":
     parseArgs()
     serialPort = ask_for_port()
     serialBaud = ask_baud()
+    fmt = ask_format()
     printData()
