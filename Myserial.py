@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
@@ -75,7 +75,8 @@ def printAscii(Ser):
             string_data = str(Ser.read())
             sys.stdout.write(string_data)
         else:
-            string_data = Ser.read()
+            bytes_data = Ser.read()
+            string_data = bytes_data.decode("utf-8")
             sys.stdout.write(str(string_data))
 
 
