@@ -13,12 +13,10 @@ import serial
 from serial.tools.list_ports import comports
 
 
-fmt = 0  # format
-
+fmt = 0  # format:1 bin:2 oct:3 dec:4 hex:5 csvexport:6
 default_baud = 1000000  # baudrate
-csv_directory = 'Desktop/'  # CSVファイルの保存先
-
-fileName = 'datalog'
+csv_directory = ''  # CSVファイルの保存先
+fileName = 'datalog'   # CSVファイルの保存名を決定
 
 
 def ask_for_port():
@@ -58,8 +56,8 @@ def ask_baud():
 
     try:
         sys.stdout.write("---  baudrate: ")
-        sys.stdout.write(str(int(baud)))
-        # print(int(baud))
+        sys.stdout.write(str(baud)+"\r\n")
+        baud = int(baud)
     except ValueError:
         sys.stdout.write("default:"+str(default_baud)+"\r\n")
         baud = default_baud
@@ -113,30 +111,30 @@ def printOct(Ser):
     while True:
         if sys.version_info.major != 3:
             data = ord(Ser.read())
-            sys.stdout.write(str(data)+" OCT:"+format(data, '#08o')+"\r\n")
+            sys.stdout.write(str(data)+" OCT:"+oct(data)+"\r\n")
         else:
             data = ord(Ser.read())
-            print(format(str(data)+" OCT:"+format(data, '#08o')+"\r\n"))
+            print(format(str(data)+" OCT:"+oct(data)+"\r\n"))
 
 
 def printDec(Ser):
     while True:
         if sys.version_info.major != 3:
             data = ord(Ser.read())
-            sys.stdout.write(str(data)+" DEC:"+format(data, '#08d')+"\r\n")
+            sys.stdout.write(str(data)+" DEC:"+dec(data)+"\r\n")
         else:
             data = ord(Ser.read())
-            print(str(data)+" DEC:"+format(data, '#08d')+"\r\n")
+            print(str(data)+" DEC:"+dec(data)+"\r\n")
 
 
 def printHex(Ser):
     while True:
         if sys.version_info.major != 3:
             data = ord(Ser.read())
-            sys.stdout.write(str(data)+" HEX:"+format(data, '#08x')+"\r\n")
+            sys.stdout.write(str(data)+" HEX:"+hex(data)+"\r\n")
         else:
             data = ord(Ser.read())
-            print(str(data)+" HEX:"+format(data, '#08x')+"\r\n")
+            print(str(data)+" HEX:"+hex(data)+"\r\n")
 
 
 def printAsciiWithCSVOutput(Ser):
@@ -181,6 +179,8 @@ def exit():
 def printData():
     global fmt
     global Ser
+    global serialBaud
+    global serialPort
     Ser = serial.Serial(serialPort, serialBaud, timeout=None)
     if fmt == 1:  # bin
         printBin(Ser)
@@ -217,9 +217,8 @@ def parseArgs():
 
 if __name__ == "__main__":
     atexit.register(exit)
-
     parseArgs()
     serialPort = ask_for_port()
     serialBaud = ask_baud()
-    fmt = ask_format()
+#     fmt = ask_format()
     printData()
