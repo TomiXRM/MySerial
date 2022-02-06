@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+from curses import baudrate
+# from email.policy import default
 
-import codecs
-import os
 import sys
-import threading
-import sys
-from enum import Enum
 
 import serial
 from serial.tools.list_ports import comports
 from serial.tools import hexlify_codec
 
 fmt = 0  # format
+default_baud = 1000000
 
 
 def ask_for_port():
 
     sys.stderr.write("\n--- Available ports:\n")
     ports = []
-    for n, (port, desc, hwid) in enumerate(sorted(comports()), 1):
-        sys.stderr.write("--- {:2}: {:20} {!r}\n".format(n, port, desc))
+    for n, (port, desc, devid) in enumerate(sorted(comports()), 1):
+        sys.stderr.write(
+            "--- {:2}: {:20} {!r} \n".format(n, port, desc))
         ports.append(port)
     while True:
         if sys.version_info.major != 3:
@@ -36,13 +35,15 @@ def ask_for_port():
         except ValueError:
             #     pass
             port = ports[len(ports)-1]
+            sys.stderr.write("---  Use: "+str(ports[len(ports)-1])+"\n")
         else:
             port = ports[index]
+            sys.stderr.write("---  Use: "+str(ports[index])+"\n")
         return port
 
 
 def ask_baud():
-    baud = 230400
+    baud = default_baud
     if sys.version_info.major != 3:
         baud = raw_input("--- Enter baudrate: ")
     else:
@@ -53,24 +54,23 @@ def ask_baud():
         sys.stdout.write(str(int(baud)))
         # print(int(baud))
     except ValueError:
-        sys.stdout.write("230400")
-        baud = 230400
+        sys.stdout.write("default:"+str(default_baud)+"\r\n")
+        baud = default_baud
 
     return baud
 
 
 def ask_format():
-    sys.stdout.write("\r\n--- bin:1  oct:2  dec:3  hex:4  ASCI:ENTER\r\n")
+    sys.stdout.write("--- bin:1  oct:2  dec:3  hex:4  ASCI:ENTER\r\n")
     if sys.version_info.major != 3:
         format = raw_input("--- Enter format: ")
     else:
         format = input("--- Enter format: ")
-    return format
+    return int(format)
 
 
 def printAscii(Ser):
     while True:
-
         if sys.version_info.major != 3:
             string_data = str(Ser.read())
             sys.stdout.write(string_data)
@@ -82,64 +82,47 @@ def printAscii(Ser):
 
 def printBin(Ser):
     while True:
-
         if sys.version_info.major != 3:
             data = ord(Ser.read())
-            sys.stdout.write(bin(data))
-            sys.stdout.write("\n")
+            sys.stdout.write(str(data)+" BIN:"+format(data, '#08b')+"\r\n")
         else:
-            data = ord(Ser.readline())
-            print(str(string_data))
+            data = ord(Ser.read())
+            print(str(data)+" BIN:"+format(data, '#08b')+"\r\n")
 
 
 def printOct(Ser):
     while True:
         if sys.version_info.major != 3:
-            for i in range(8):
-
-                data = ord(Ser.read())
-                sys.stdout.write(oct(data))
-                sys.stdout.write(" ")
-            sys.stdout.write("\n")
+            data = ord(Ser.read())
+            sys.stdout.write(str(data)+" OCT:"+format(data, '#08o')+"\r\n")
         else:
-            for i in range(8):
-                data = ord(Ser.readline())
-                print(oct(data))
-                print(" ")
-            print("\n")
+            data = ord(Ser.read())
+            print(format(str(data)+" OCT:"+format(data, '#08o')+"\r\n"))
 
 
 def printDec(Ser):
     while True:
         if sys.version_info.major != 3:
             data = ord(Ser.read())
-            sys.stdout.write(str(data))
-            sys.stdout.write("\n")
+            sys.stdout.write(str(data)+" DEC:"+format(data, '#08d')+"\r\n")
         else:
-            data = ord(Ser.readline())
-            print(str(data))
-            print("\n")
+            data = ord(Ser.read())
+            print(str(data)+" DEC:"+format(data, '#08d')+"\r\n")
 
 
 def printHex(Ser):
     while True:
         if sys.version_info.major != 3:
-            for i in range(8):
-                string_data = ord(Ser.read())
-                sys.stdout.write(hex(string_data))
-                sys.stdout.write(" ")
-            sys.stdout.write("\n")
+            data = ord(Ser.read())
+            sys.stdout.write(str(data)+" HEX:"+format(data, '#08x')+"\r\n")
         else:
-            for i in range(8):
-                string_data = ord(Ser.readline())
-                print(hex(string_data))
-                print(" ")
-            sys.stdout.write("\n")
+            data = ord(Ser.read())
+            print(str(data)+" HEX:"+format(data, '#08x')+"\r\n")
 
 
 def printData():
+    global fmt
     Ser = serial.Serial(serialPort, serialBaud, timeout=None)
-
     if fmt == 1:  # bin
         printBin(Ser)
     elif fmt == 2:  # oct
