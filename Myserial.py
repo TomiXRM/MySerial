@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from curses import baudrate
-# from email.policy import default
 
 import sys
 
+import atexit
+import csv
+import time
+from datetime import datetime
+
 import serial
 from serial.tools.list_ports import comports
-from serial.tools import hexlify_codec
+
 
 fmt = 0  # format
-default_baud = 1000000
+
+default_baud = 1000000  # baudrate
+csv_directory = 'Desktop/'  # CSVファイルの保存先
+
+fileName = 'datalog'
 
 
 def ask_for_port():
@@ -61,12 +68,24 @@ def ask_baud():
 
 
 def ask_format():
-    sys.stdout.write("--- bin:1  oct:2  dec:3  hex:4  ASCI:ENTER\r\n")
-    if sys.version_info.major != 3:
-        format = raw_input("--- Enter format: ")
+    global fmt
+    if fmt == 0:
+        sys.stdout.write(
+            "--- bin:1  oct:2  dec:3  hex:4  makecsv:5 ASCI:ENTER\r\n")
+        if sys.version_info.major != 3:
+            format = raw_input("--- Enter format: ")
+        else:
+            format = input("--- Enter format: ")
+        try:
+            fmt = int(format)
+            if not 1 <= fmt <= 5:
+                sys.stderr.write("--- Invalid format!\n")
+                fmt = 0  # format
+        except ValueError:
+            fmt = 0  # format
+        return format
     else:
-        format = input("--- Enter format: ")
-    return int(format)
+        return fmt
 
 
 def printAscii(Ser):
@@ -120,8 +139,48 @@ def printHex(Ser):
             print(str(data)+" HEX:"+format(data, '#08x')+"\r\n")
 
 
+def printAsciiWithCSVOutput(Ser):
+    global fileName
+    fileName = csv_directory + fileName + \
+        datetime.now().strftime("%Y%m%d-%H%M%S")+".csv"
+    print(fileName)
+    strLine = ""
+    while True:
+        if sys.version_info.major != 3:
+            bytes_data = Ser.read()
+        else:
+            bytes_data = Ser.read()
+            string_data = bytes_data.decode("utf-8")
+            sys.stdout.write(string_data)
+            strLine += string_data
+            if string_data == '\n':
+                strLine = str(' Time:' +
+                              datetime.now().strftime("%Y%m%d.%H%M%S"))+strLine
+                strLine = strLine.replace(':', ',').replace(
+                    ' ', ',').replace('\t', ',').replace('\r', '').replace('\n', '')
+                dataList = strLine.split(',')
+                # print(dataList) #リスト化されたやつ
+                addCSV(dataList)
+                strLine = ''
+
+
+def addCSV(list):
+    global csv_directory
+    with open(fileName, 'a', newline='') as data:
+        csv.writer(data, lineterminator='\n').writerow(list)
+        data.close()
+
+
+def exit():
+    global Ser
+    print('----------------------------------------------')
+    print('✨finish!!✨')
+    Ser.close()
+
+
 def printData():
     global fmt
+    global Ser
     Ser = serial.Serial(serialPort, serialBaud, timeout=None)
     if fmt == 1:  # bin
         printBin(Ser)
@@ -131,6 +190,8 @@ def printData():
         printDec(Ser)
     elif fmt == 4:  # hex
         printHex(Ser)
+    elif fmt == 5:  # csv
+        printAsciiWithCSVOutput(Ser)
     else:  # ascii
         printAscii(Ser)
     Ser.close()
@@ -148,11 +209,15 @@ def parseArgs():
             fmt = 3
         elif args[1] == "hex":
             fmt = 4
+        elif args[1] == "csv":
+            fmt = 5
         else:
             fmt = 0
 
 
 if __name__ == "__main__":
+    atexit.register(exit)
+
     parseArgs()
     serialPort = ask_for_port()
     serialBaud = ask_baud()
