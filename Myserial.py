@@ -15,7 +15,7 @@ from serial.tools.list_ports import comports
 
 fmt = 0  # format:1 bin:2 oct:3 dec:4 hex:5 csvexport:6
 default_baud = 1000000  # baudrate
-csv_directory = ''  # CSVファイルの保存先
+csv_directory = 'Desktop/'  # CSVファイルの保存先
 fileName = 'datalog'   # CSVファイルの保存名を決定
 
 
@@ -144,22 +144,19 @@ def printAsciiWithCSVOutput(Ser):
     print(fileName)
     strLine = ""
     while True:
-        if sys.version_info.major != 3:
-            bytes_data = Ser.read()
-        else:
-            bytes_data = Ser.read()
-            string_data = bytes_data.decode("utf-8")
-            sys.stdout.write(string_data)
-            strLine += string_data
-            if string_data == '\n':
-                strLine = str(' Time:' +
-                              datetime.now().strftime("%Y%m%d.%H%M%S"))+strLine
-                strLine = strLine.replace(':', ',').replace(
-                    ' ', ',').replace('\t', ',').replace('\r', '').replace('\n', '')
-                dataList = strLine.split(',')
-                # print(dataList) #リスト化されたやつ
-                addCSV(dataList)
-                strLine = ''
+        bytes_data = Ser.read()
+        string_data = bytes_data.decode("utf-8")
+        sys.stdout.write(string_data)
+        strLine += string_data
+        if string_data == '\n':
+            strLine = str(' Time:' +
+                          datetime.now().strftime("%Y%m%d.%H%M%S"))+strLine
+            strLine = strLine.replace(':', ',').replace(
+                ' ', ',').replace('\t', ',').replace('\r', '').replace('\n', '')
+            dataList = strLine.split(',')
+            # print(dataList) #リスト化されたやつ
+            addCSV(dataList)
+            strLine = ''
 
 
 def addCSV(list):
