@@ -14,7 +14,7 @@ from serial.tools.list_ports import comports
 
 
 fmt = 0  # format:1 bin:2 oct:3 dec:4 hex:5 csvexport:6
-default_baud = 1000000  # baudrate
+default_baud = 2000000  # baudrate
 csv_directory = 'Desktop/'  # CSVファイルの保存先
 fileName = 'datalog'   # CSVファイルの保存名を決定
 
@@ -92,8 +92,12 @@ def printAscii(Ser):
             string_data = str(Ser.read())
             sys.stdout.write(string_data)
         else:
+            string_data = ''
             bytes_data = Ser.read()
-            string_data = bytes_data.decode("utf-8")
+            try:
+                string_data = bytes_data.decode("utf-8")
+            except UnicodeDecodeError:
+                string_data = ''
             sys.stdout.write(str(string_data))
 
 
@@ -145,8 +149,13 @@ def printAsciiWithCSVOutput(Ser):
     strLine = ""
     while True:
         bytes_data = Ser.read()
-        string_data = bytes_data.decode("utf-8")
+        string_data = ''
+        try:
+            string_data = bytes_data.decode("utf-8")
+        except UnicodeDecodeError:
+            string_data = ''
         sys.stdout.write(string_data)
+
         strLine += string_data
         if string_data == '\n':
             strLine = str(' Time:' +
