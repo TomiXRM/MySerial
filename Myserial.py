@@ -158,13 +158,12 @@ def printAsciiWithCSVOutput(Ser):
 
         strLine += string_data
         if string_data == '\n':
-            strLine = str(' Time:' +
-                          datetime.now().strftime("%Y%m%d.%H%M%S,"))+strLine
             strLine = strLine.replace(':', ',').replace(
                 ' ', ',').replace('\t', ',').replace('\r', '').replace('\n', '')
-            dataList = strLine.split(',')
             # print(dataList) #リスト化されたやつ
-            addCSV(dataList)
+            strLine = str(' Time:' +
+                          datetime.now().strftime("%Y-%m-%d.%H:%M:%S.%f,"))+strLine
+            addCSV(list(filter(None, strLine.split(','))))
             strLine = ''
 
 
@@ -180,9 +179,7 @@ def csvFinish():
     dict = {}
     maxlen = 0
     csvData = 0
-    directory = fileName
-    with open(directory, 'r') as csvfile:
-
+    with open(fileName, 'r') as csvfile:
         csvreader = csv.reader(csvfile)
         l = [row for row in csvreader]
         maxlen = 0
@@ -193,7 +190,7 @@ def csvFinish():
             if(maxlen < len(l[i])):
                 maxlen = len(l[i])
 
-        print("maxlen:" + str(maxlen))
+        # print("maxlen:" + str(maxlen))
 
         a = [[0]]*maxlen
         b = [[0]]*maxlen
@@ -213,29 +210,44 @@ def csvFinish():
                     # print("error")
                     pass
 
-        for key in list(dict):
-            if(dict[key]['count'] < 18 or key == ''):
-                dict.pop(key)
+            for key in list(dict):
+                if(dict[key]['count'] < 18 or key == ''):
+                    dict.pop(key)
 
             # pprint.pprint(dict)
+        keyValue_GoingToRemove = []
+        count = 0
+        text = ','
+        for key in range(maxlen):
+            for key2 in list(dict):
+                if(dict[key2]['row'] == key):
+                    text += key2
+                    keyValue_GoingToRemove.append(count)
+                    if(key != maxlen-1):
+                        text += ','
+            count += 1
+        text = text.split(',')
+        # print(l[20])
+        # print(text)
+        # print("goint to remove", end='')
+        # print(keyValue_GoingToRemove)
 
-    text = ','
-    for key in range(maxlen):
-        for key2 in list(dict):
-            if(dict[key2]['row'] == key):
-                text += key2
-        if(key != maxlen-1):
-            text += ','
-    text += '\r\n'
-    # print(l[20])
-    print(text)
-    with open(directory, 'r') as csvfile:
-        csvData = csvfile.read()
-        # print(csvData)
-        os.remove(directory)
-    with open(directory, 'w') as writer:
-        writer.write(text)
-        writer.write(csvData)
+        with open(fileName, 'r') as csvfile:
+            reader = csv.reader(csvfile)
+            os.remove(fileName)
+            with open(fileName, "w") as result:
+                writer = csv.writer(result)
+                writer.writerow(text)
+                for r in reader:
+                    count = 0
+                    myList = []
+                    for value in r:
+                        if((count in keyValue_GoingToRemove) != True):
+                            myList.append(value)
+                        count += 1
+                    # print(myList)
+                    writer.writerow(myList)
+    print("open "+fileName)
 
 
 def exit():
