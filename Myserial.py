@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 
 import sys
-
+import os
 import atexit
 import csv
 import time
@@ -159,7 +159,7 @@ def printAsciiWithCSVOutput(Ser):
         strLine += string_data
         if string_data == '\n':
             strLine = str(' Time:' +
-                          datetime.now().strftime("%Y%m%d.%H%M%S"))+strLine
+                          datetime.now().strftime("%Y%m%d.%H%M%S,"))+strLine
             strLine = strLine.replace(':', ',').replace(
                 ' ', ',').replace('\t', ',').replace('\r', '').replace('\n', '')
             dataList = strLine.split(',')
@@ -175,10 +175,76 @@ def addCSV(list):
         data.close()
 
 
+def csvFinish():
+    global fileName
+    dict = {}
+    maxlen = 0
+    csvData = 0
+    directory = fileName
+    with open(directory, 'r') as csvfile:
+
+        csvreader = csv.reader(csvfile)
+        l = [row for row in csvreader]
+        maxlen = 0
+        num = 0
+
+        for i in range(10):
+            # print(l[i+10])
+            if(maxlen < len(l[i])):
+                maxlen = len(l[i])
+
+        print("maxlen:" + str(maxlen))
+
+        a = [[0]]*maxlen
+        b = [[0]]*maxlen
+
+        for i in range(maxlen):
+            for j in range(20):
+                try:
+                    # print(l[j+10][i])
+                    a = l[j+10][i]
+                    b = l[j+11][i]
+                    if(a == b):
+                        if(a in dict):
+                            dict[a]['count'] += 1
+                        else:
+                            dict[a] = {"row": i, "count": 1}
+                except:
+                    # print("error")
+                    pass
+
+        for key in list(dict):
+            if(dict[key]['count'] < 18 or key == ''):
+                dict.pop(key)
+
+            # pprint.pprint(dict)
+
+    text = ','
+    for key in range(maxlen):
+        for key2 in list(dict):
+            if(dict[key2]['row'] == key):
+                text += key2
+        if(key != maxlen-1):
+            text += ','
+    text += '\r\n'
+    # print(l[20])
+    print(text)
+    with open(directory, 'r') as csvfile:
+        csvData = csvfile.read()
+        # print(csvData)
+        os.remove(directory)
+    with open(directory, 'w') as writer:
+        writer.write(text)
+        writer.write(csvData)
+
+
 def exit():
     global Ser
+    if(fmt == 5):
+        csvFinish()
     print('----------------------------------------------')
     print('✨finish!!✨')
+
     Ser.close()
 
 
