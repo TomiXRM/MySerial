@@ -7,6 +7,7 @@ import os
 import atexit
 import csv
 import time
+import subprocess
 from datetime import datetime
 
 import serial
@@ -252,8 +253,13 @@ def csvFinish():
 
 def exit():
     global Ser
-    if(fmt == 5):
+    global fileName
+    if(fmt == 5 or fmt == 6):
         csvFinish()
+    if(fmt == 6):
+        result = subprocess.run('python graph.py ' + fileName, shell=True)
+        if result.returncode != 0:
+            print("couldn't open file...")
     print('----------------------------------------------')
     print('✨finish!!✨')
 
@@ -274,7 +280,7 @@ def printData():
         printDec(Ser)
     elif fmt == 4:  # hex
         printHex(Ser)
-    elif fmt == 5:  # csv
+    elif fmt == 5 or fmt == 6:  # csv
         printAsciiWithCSVOutput(Ser)
     else:  # ascii
         printAscii(Ser)
@@ -295,6 +301,8 @@ def parseArgs():
             fmt = 4
         elif args[1] == "csv":
             fmt = 5
+        elif args[1] == 'csv+':
+            fmt = 6
         else:
             fmt = 0
 
