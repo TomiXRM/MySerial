@@ -9,6 +9,7 @@ Using with python lancher is recommended.
 ## Usage
 Usage is quite simple. Probably you wouldn't need this instruction but just in case.
 
+![usage.jpg](usage.jpg)
 ### Step0. Call this script
 
 ~~~bash
