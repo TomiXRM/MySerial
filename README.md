@@ -4,16 +4,16 @@
 
 Pythonが動けばWindows・Mac・Ubuntuなどどこでも動きます。
 
+[![alt設定](http://img.youtube.com/vi/1HUHA3BguRk/0.jpg)](https://www.youtube.com/watch?v=1HUHA3BguRk)
+
 ![usage.jpg](img/usage.jpg)
 
 ライブラリに応じてMITライセンスになっています。
 
-<aside>
-⚠️ 動作環境は **python3**です。Python3環境構築をしたことがない人はこちらを参考に
+⚠️ 動作環境は **python3** です。Python3環境構築をしたことがない人はこちらを参考に
 
 - [Mac](https://prog-8.com/docs/python-env)
 - [Windows](https://prog-8.com/docs/python-env-win)
-</aside>
 
 # 対応している機能
 
@@ -157,7 +157,7 @@ python Myserial.py bin
 - `config.ini`をいじることでパラメータを変更できます
 - `:` でも `=`でも同じ意味です
 
-```json
+```
 # baud
 #シリアル通信のボーレート
 # 4800, 7200, 9600, 14400,19200, 28800, 38400, 57600, 76800, 115200, 230400, 460800, 921600, 1000000, 2000000, 4000000
@@ -199,8 +199,9 @@ fileName  : datalog
 
 1. 以下のテキストを`.zshrc` / `.bashrc`にペーストしましょう。
 
-- `alias`を使ってコマンドを省略できます。
-1. `myser csv+`のようにすると`python Myserial.py csv+`を実行できます
+   - `alias`を使ってコマンドを省略できます。
+   - 
+2. `myser csv+`のようにすると`python Myserial.py csv+`を実行できます
 
 ```
 # Myserialを実行するエイリアス
