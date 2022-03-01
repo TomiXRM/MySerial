@@ -12,8 +12,6 @@ from datetime import datetime
 
 import serial
 from serial.tools.list_ports import comports
-
-
 fmt = 0  # format:1 bin:2 oct:3 dec:4 hex:5 csvexport:6
 default_baud = 2000000  # baudrate
 csv_directory = 'Desktop/'  # CSVファイルの保存先
@@ -21,7 +19,6 @@ fileName = 'datalog'   # CSVファイルの保存名を決定
 
 
 def ask_for_port():
-
     sys.stderr.write("\n--- Available ports:\n")
     ports = []
     for n, (port, desc, devid) in enumerate(sorted(comports()), 1):
@@ -251,9 +248,9 @@ def csvFinish():
     print("open "+fileName)
 
 
-def exit():
-    global Ser
+def exit(args):
     global fileName
+    Ser = args
     if(fmt == 5 or fmt == 6):
         csvFinish()
     if(fmt == 6):
@@ -268,10 +265,10 @@ def exit():
 
 def printData():
     global fmt
-    global Ser
     global serialBaud
     global serialPort
     Ser = serial.Serial(serialPort, serialBaud, timeout=None)
+    atexit.register(exit,Ser)
     if fmt == 1:  # bin
         printBin(Ser)
     elif fmt == 2:  # oct
@@ -308,7 +305,6 @@ def parseArgs():
 
 
 if __name__ == "__main__":
-    atexit.register(exit)
     parseArgs()
     serialPort = ask_for_port()
     serialBaud = ask_baud()
