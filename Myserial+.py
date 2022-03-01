@@ -12,27 +12,30 @@ import threading
 import subprocess
 import os
 import csv
+import configparser
 
 
-baud = 2000000
-# 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400,
-baudList = [4800, 7200, 9600, 14400,
-            19200, 28800, 38400, 57600, 76800, 115200, 230400, 460800, 921600, 1000000, 2000000, 4000000]
+inifile = configparser.ConfigParser()
+inifile.read('./config.ini', 'UTF-8')
+serialPort = inifile.get('Serial', 'port')
+baud = int(inifile.get('Serial', 'baud'))
+csv_directory = inifile.get('CSV', 'directory')
+fileName = inifile.get('CSV', 'fileName')
+fmt = inifile.get('Serial', 'fmt')
 
-fmts = ['bin', 'oct', 'dec', 'hex', 'csv', 'csv+', 'asci']
-fmt = fmts.index('asci')
-serialLogState = False
-serialPort = ''
-csv_directory = 'Desktop/'  # CSVファイルの保存先
-fileName = 'datalog'   # CSVファイルの保存名を決定
-strLine = ''
+print("Default Setup",serialPort,baud,csv_directory,fileName,fmt)
+print("You can change setup with open change 'config.ini'")
 
 
 class Madoka(QWidget):
-    global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
-
+    global serialPort, baud, fmt
     def __init__(self):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
+        global serialPort, baud, fmt
+        self.serialLogState = False
+        self.fmts = ['bin', 'oct', 'dec', 'hex', 'csv', 'csv+', 'ascii']
+        self.baudList = [4800, 7200, 9600, 14400,
+            19200, 28800, 38400, 57600, 76800, 115200, 230400, 460800, 921600, 1000000, 2000000, 4000000]
+        fmt = self.fmts.index(fmt) 
         super().__init__()
         layoutA = QHBoxLayout()
 
@@ -60,7 +63,7 @@ class Madoka(QWidget):
 
         self.baudBox.currentTextChanged.connect(self.baudSelected)
         try:
-            self.baudBox.setCurrentIndex(baudList.index(baud))
+            self.baudBox.setCurrentIndex(self.baudList.index(baud))
         except:
             self.baudBox.setCurrentIndex(-1)
 
@@ -72,56 +75,59 @@ class Madoka(QWidget):
         self.button1.released.connect(self.btn1Clicked)
         layoutA.addWidget(self.button1)
 
-        serialPort = self.ports[len(self.ports)-1]
+        
 
     def portSelected(self, text):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
+        global serialPort
         if(text != ''):
             serialPort = self.ports[self.portsIndex.index(text)]
             # print(serialPort)
             # self.erandano.setText(self.port)
 
     def baudSelected(self, text):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
+        global baud
         if(text != ''):
             baud = text
             # print(baud)
 
     def formatSelected(self, text):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
+        global fmt
         if(text != ''):
-            fmt = fmts.index(text)
+            fmt = self.fmts.index(text)
             # print(text)
 
     def getPorts(self):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
+        global serialPort
         # sys.stderr.write("\n--- Available ports:\n")
         self.ports = []
         self.portsIndex = []
         for n, (port, desc, devid) in enumerate(sorted(comports()), 1):
             # sys.stderr.write("--- {:2}: {:20} {!r} \n".format(n, port, desc))
             self.ports.append(port)
+            print(port)
             self.portsIndex.append("{:2}: {:20} {!r}".format(n, port, desc))
+        try:
+            serialPort = self.ports.index(serialPort)
+        except:
+            serialPort = self.ports[len(self.ports)-1]
         for s in self.portsIndex:
             self.portBox.addItem(s)
 
     def getBaud(self):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
-        for b in baudList:
+        for b in self.baudList:
             self.baudBox.addItem(str(b))
 
     def getFormat(self):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
-        for f in fmts:
+        global fmt
+        for f in self.fmts:
             self.formatBox.addItem(f)
 
     def btn1Clicked(self):
-        global Ser, serialPort, baud, serialLogState, fmt, fmts, baudList
         if(self.button1.text() == 'start'):
             self.baudBox.setDisabled(True)
             self.formatBox.setDisabled(True)
             self.button1.setText('stop')
-            serialLogState = True
+            self.serialLogState = True
             th = threading.Thread(target=printData)
             th.setDaemon(True)
             th.start()
@@ -129,12 +135,12 @@ class Madoka(QWidget):
             self.button1.setText('start')
             self.baudBox.setDisabled(False)
             self.formatBox.setDisabled(False)
-            serialLogState = False
+            self.serialLogState = False
             # th.sleep()
 
 
 def printAscii(Ser):
-    while(serialLogState):
+    while(mado.serialLogState):
         string_data = ''
         try:
             string_data = Ser.read().decode("utf-8")
@@ -144,7 +150,7 @@ def printAscii(Ser):
 
 
 def printBin(Ser):
-    while(serialLogState):
+    while(mado.serialLogState):
         data = ''
         try:
             data = ord(Ser.read())
@@ -154,7 +160,7 @@ def printBin(Ser):
 
 
 def printOct(Ser):
-    while(serialLogState):
+    while(mado.serialLogState):
         data = ''
         try:
             data = ord(Ser.read())
@@ -164,7 +170,7 @@ def printOct(Ser):
 
 
 def printDec(Ser):
-    while(serialLogState):
+    while(mado.serialLogState):
         data = ''
         try:
             data = ord(Ser.read())
@@ -174,7 +180,7 @@ def printDec(Ser):
 
 
 def printHex(Ser):
-    while(serialLogState):
+    while(mado.serialLogState):
         data = ''
         try:
             data = ord(Ser.read())
@@ -184,12 +190,12 @@ def printHex(Ser):
 
 
 def printAsciiWithCSVOutput(Ser):
-    global fileName, strLine
+    global fileName
     fileName = csv_directory + fileName + \
         datetime.now().strftime("%Y%m%d-%H%M%S")+".csv"
     print(fileName)
     strLine = ""
-    while (serialLogState):
+    while (mado.serialLogState):
         bytes_data = Ser.read()
         string_data = ''
         try:
@@ -291,7 +297,7 @@ def csvFinish():
     print("open "+fileName)
 
 def exit():
-    global fmt, Ser, fileName
+    global fmt, fileName
 
     if(fmt == 4 or fmt == 5):
         csvFinish()
@@ -306,9 +312,9 @@ def exit():
 
 
 def printData():
-    global serialPort, baud, serialLogState, fmt, fmts, baudList
+    global serialPort, baud, fmt
 
-    while(serialLogState == False):
+    while(mado.serialLogState == False):
         pass
     try:
         Ser = serial.Serial(str(serialPort), baud, timeout=None)
