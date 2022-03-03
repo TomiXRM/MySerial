@@ -4,8 +4,6 @@
 
 Pythonが動けばWindows・Mac・Ubuntuなどどこでも動きます。
 
-[![alt設定](http://img.youtube.com/vi/1HUHA3BguRk/0.jpg)](https://www.youtube.com/watch?v=1HUHA3BguRk)
-
 ![usage.jpg](img/usage.jpg)
 
 ライブラリに応じてMITライセンスになっています。
@@ -15,11 +13,13 @@ Pythonが動けばWindows・Mac・Ubuntuなどどこでも動きます。
 - [Mac](https://prog-8.com/docs/python-env)
 - [Windows](https://prog-8.com/docs/python-env-win)
 
-# 対応している機能
+# できること
 
 - CSV出力
 - グラフ出力
 - 進数出力(e,g 2進数,16進数...)
+
+![使い方](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b1514e05-cb4e-4bdf-b57a-51611db3cc25/usage.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220303%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220303T100919Z&X-Amz-Expires=86400&X-Amz-Signature=dbdb3b2d877db445984648de1f74ff9bd4490e2806fca34ddd3eb23c5da39623&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22usage.gif%22&x-id=GetObject)
 
 # How to install
 
@@ -39,19 +39,24 @@ GitHub CLIを使う場合は`gh repo clone TomiXRM/MySerial`
 
 ## Step2 ライブラリのインストール
 
-- インストールされるライブラリ / Requirements
-    - pyserial
-    - pyqtgraph
-    - numpy
-    - pandas
-    - PyQt6
-
-`cd “ダウンロードしたファイルのディレクトリ”`をしてから次のコマンドを実行します
+`cd {ダウンロードしたファイルのディレクトリ}`をしてから次のコマンドを実行します
 
 ```bash
 pip install -r requirements.txt
 ```
 
+<details>
+<summary>インストールされるライブラリ / Requirements</summary>
+
+- pyserial
+- pyqtgraph
+- numpy
+- pandas
+- PyQt6
+
+
+
+</details>
 ## Step3 Myserialの実行
 
 以下のコマンドでMyserialが実行されます
