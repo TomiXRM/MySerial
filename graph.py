@@ -14,7 +14,17 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 import numpy as np
 import sys
-file = "/Users/tomixrm/Desktop/datalog20220228-012036.csv"
+file = "/Users/tomixrm/Desktop/datalog20220411-192102.csv"
+
+
+c = '#0CC9D3'
+m = '#EC2BAB'
+y = '#E8BC1C'
+r = '#EC516B'
+g = '#00D970'
+b = '#008EFF'
+v = '#8756EC'
+
 
 args = sys.argv
 if len(args) > 1:
@@ -26,6 +36,7 @@ win = pg.GraphicsLayoutWidget(show=True)
 win.setWindowTitle('Myserial graph')
 label = pg.LabelItem(justify='right')
 win.addItem(label)
+win.setBackground('w')
 p1 = win.addPlot(row=1, col=0)
 p2 = win.addPlot(row=2, col=0)
 
@@ -44,7 +55,7 @@ p1.setAutoVisible(y=True)
 df = pd.read_csv(file)
 # 非数値の列のみ選択
 df = df.select_dtypes(include='number')
-colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+colors = [c, m, y, r, g, b, v]
 columnlist = df.columns
 qty = 0
 for col in columnlist:
@@ -74,7 +85,7 @@ def updateRegion(window, viewRange):
 
 p1.sigRangeChanged.connect(updateRegion)
 
-region.setRegion([1000, 2000])
+region.setRegion([100, 400])
 
 # cross hair
 vLine = pg.InfiniteLine(angle=90, movable=False)

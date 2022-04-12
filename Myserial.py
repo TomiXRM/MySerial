@@ -268,7 +268,7 @@ def printData():
     global serialBaud
     global serialPort
     Ser = serial.Serial(serialPort, serialBaud, timeout=None)
-    atexit.register(exit,Ser)
+    atexit.register(exit, Ser)
     if fmt == 1:  # bin
         printBin(Ser)
     elif fmt == 2:  # oct
