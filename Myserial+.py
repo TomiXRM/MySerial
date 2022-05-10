@@ -23,19 +23,20 @@ csv_directory = inifile.get('CSV', 'directory')
 fileName = inifile.get('CSV', 'fileName')
 fmt = inifile.get('Serial', 'fmt')
 
-print("Default Setup",serialPort,baud,csv_directory,fileName,fmt)
+print("Default Setup", serialPort, baud, csv_directory, fileName, fmt)
 print("You can change setup with open change 'config.ini'")
 
 
 class Madoka(QWidget):
     global serialPort, baud, fmt
+
     def __init__(self):
         global serialPort, baud, fmt
         self.serialLogState = False
         self.fmts = ['bin', 'oct', 'dec', 'hex', 'csv', 'csv+', 'ascii']
         self.baudList = [4800, 7200, 9600, 14400,
-            19200, 28800, 38400, 57600, 76800, 115200, 230400, 460800, 921600, 1000000, 2000000, 4000000]
-        fmt = self.fmts.index(fmt) 
+                         19200, 28800, 38400, 57600, 76800, 115200, 230400, 460800, 921600, 1000000, 2000000, 4000000]
+        fmt = self.fmts.index(fmt)
         super().__init__()
         layoutA = QHBoxLayout()
 
@@ -74,8 +75,6 @@ class Madoka(QWidget):
         self.button1.setText("start")
         self.button1.released.connect(self.btn1Clicked)
         layoutA.addWidget(self.button1)
-
-        
 
     def portSelected(self, text):
         global serialPort
@@ -128,8 +127,7 @@ class Madoka(QWidget):
             self.formatBox.setDisabled(True)
             self.button1.setText('stop')
             self.serialLogState = True
-            th = threading.Thread(target=printData)
-            th.setDaemon(True)
+            th = threading.Thread(target=printData, daemon=True)
             th.start()
         elif(self.button1.text() == 'stop'):
             self.button1.setText('start')
@@ -295,6 +293,7 @@ def csvFinish():
                     # print(myList)
                     writer.writerow(myList)
     print("open "+fileName)
+
 
 def exit():
     global fmt, fileName
